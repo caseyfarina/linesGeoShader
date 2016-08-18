@@ -4,7 +4,7 @@
 void ofApp::setup(){
 	
 	ofSetLogLevel(OF_LOG_VERBOSE);
-	ofBackground(50, 50, 50);
+	ofBackground(255, 255, 255);
 	ofSetVerticalSync(true);
 	ofSetFrameRate(60);
 	ofEnableAlphaBlending();
@@ -17,6 +17,7 @@ void ofApp::setup(){
 	ofLog() << "Maximum number of output vertices support is: " << shader.getGeometryMaxOutputCount();
 	mesh.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
 	mesh.enableColors();
+    mesh.enableNormals();
     
     mesh2.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
     mesh2.enableColors();
@@ -35,8 +36,10 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofPushMatrix();
 	
-	mesh.clear();
-    mesh2.clear();
+	//mesh.clear();
+    //mesh2.clear();
+    
+    /*
 	int nPts = 100;
 	ofPoint center = ofPoint(ofGetWidth()/2, ofGetHeight()/2);
 	static float T = 0;
@@ -71,38 +74,17 @@ void ofApp::draw(){
 							  127+127*cos(i/50.0+T*3)
 		));
         
-	}
-    
-    
-   center = ofPoint(ofGetWidth()/3, ofGetHeight()/2);
-    
-    for( int i = 0; i < nPts; i++ ){
-        float t = i/(float)nPts;
-        
-        ofPoint f1 = ofPoint( cosf(TWO_PI*t), sinf(TWO_PI*t));
-        ofPoint f2 = ofPoint( cosf(TWO_PI*t), sinf(TWO_PI*t*2));
-        ofPoint pt;
-        if( t > alpha ){
-            pt = f1;
-        }
-        else{
-            ofPoint p1 = ofPoint( cosf(TWO_PI*alpha), sinf(TWO_PI*alpha));
-            ofPoint p2 = ofPoint( cosf(TWO_PI*alpha), sinf(TWO_PI*alpha*2));
-            ofPoint d1 = ofPoint( -TWO_PI*sinf(TWO_PI*alpha), TWO_PI*cosf(TWO_PI*alpha));
-            ofPoint d2 = ofPoint( -TWO_PI*sinf(TWO_PI*alpha), TWO_PI*cosf(TWO_PI*alpha*2)*2);
-            ofMatrix4x4 mat;
-            mat.rotate(-RAD_TO_DEG*(atan2(d1.y, d1.x) - atan2(d2.y, d2.x)), 0, 0, 1);
-            pt = p1 + mat*(f2-p2);
-        }
-        
-        mesh2.addVertex(center + center.x*pt/6);
-        mesh2.addColor(ofColor(
-                              127+127*cos(i/50.0+T),
-                              127+127*cos(i/50.0+T*2),
-                              127+127*cos(i/50.0+T*3)
-                              ));
-        
-    }
+	}*/
+    float time = ofGetFrameNum() *0.01;
+    float x = (ofNoise(time + 100.38798))* ofGetWidth();
+    float y = ofNoise((time * .939) + 26.8789) * ofGetHeight();
+    float colorr = ofNoise((time) + 771.9) * 255;
+
+    float xN = (ofNoise(time*10.1))* 10;
+    ofPoint pusher = ofPoint(x,y,0);
+    mesh.addVertex(pusher);
+    mesh.addNormal(ofPoint(xN,xN,xN));
+    mesh.addColor(ofColor(colorr,colorr,colorr));
     
 	
 	
@@ -124,15 +106,16 @@ void ofApp::draw(){
 		//shader.setUniform3f("lightDir", sin(ofGetElapsedTimef()/10), cos(ofGetElapsedTimef()/10), 0);
 	}
 	
-	ofColor(255);
+	
 	
 	mesh.draw();
-    mesh2.draw();
+  
 	
 	//ofDrawLine( 0,0, 500, 500);
 	
 	if(doShader) shader.end();
 	
+    ofSetColor(0);
 	ofPopMatrix();
 	
 	ofDrawBitmapString("fps: " + ofToString((int)ofGetFrameRate()) + "\nPress 's' to toggle shader: " + (doShader ? "ON" : "OFF"), 20, 20);

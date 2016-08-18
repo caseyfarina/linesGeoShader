@@ -8,6 +8,7 @@ uniform float thickness;
 in Vertex{
 	vec4 color;
 	vec4 pos;
+    vec4 normal;
 } vertex[];
 
 
@@ -49,8 +50,8 @@ void main(){
 	vec2 cb = c - b;
 	vec2 cd = d - c;
 	
-    float bC = vertex[0].color.x;
-    float bD = vertex[1].color.x;
+    float bC = vertex[0].normal.y ;
+    float bD = vertex[1].normal.y ;
     
     float width = thickness * bC;
     float width2 = thickness * bD;
