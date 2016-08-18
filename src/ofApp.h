@@ -26,8 +26,9 @@ class ofApp : public ofBaseApp{
 		ofShader shader;
 		bool doShader;
 		ofMesh mesh;
-        ofMesh mesh2;
+        vector < ofMesh > meshies;
 		vector<ofPoint> points;
-		bool play; 
+		bool play;
+    ofFbo fbo;
 };
 

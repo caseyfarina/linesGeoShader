@@ -53,8 +53,8 @@ void main(){
     float bC = vertex[0].normal.y ;
     float bD = vertex[1].normal.y ;
     
-    float width = thickness * bC;
-    float width2 = thickness * bD;
+    float width = thickness * snoise(vertex[0].pos.xy);
+    float width2 = thickness * snoise(vertex[1].pos.xy);
 	//float width = thickness * snoise(b);
     //float width2 = thickness * snoise(c);
     //float width1 = mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));;

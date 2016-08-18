@@ -6,8 +6,8 @@ void ofApp::setup(){
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	ofBackground(255, 255, 255);
 	ofSetVerticalSync(true);
-	ofSetFrameRate(60);
-	ofEnableAlphaBlending();
+	//ofSetFrameRate(60);
+	//ofEnableAlphaBlending();
 	
 	shader.setGeometryInputType(GL_LINE_STRIP_ADJACENCY);
 	shader.setGeometryOutputType(GL_TRIANGLE_STRIP);
@@ -19,16 +19,29 @@ void ofApp::setup(){
 	mesh.enableColors();
     mesh.enableNormals();
     
-    mesh2.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
-    mesh2.enableColors();
+    
+    for(int i = 0; i < 1000;i++){
+        ofMesh tempmesh;
+        tempmesh.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
+        tempmesh.enableColors();
+        tempmesh.enableNormals();
+        meshies.push_back(tempmesh);
+        
+    }
 	
 	doShader = true;
 	ofDisableDepthTest();
 	play = true;
+    
+    fbo.allocate(1400, 768, GL_RGBA, 8);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    fbo.begin();
+    ofClear(255,255,255, 0);
+    fbo.end();
 	
 }
 
@@ -75,19 +88,44 @@ void ofApp::draw(){
 		));
         
 	}*/
-    float time = ofGetFrameNum() *0.01;
+    
+    /*
+    float time = ofGetFrameNum() *0.017389;
     float x = (ofNoise(time + 100.38798))* ofGetWidth();
     float y = ofNoise((time * .939) + 26.8789) * ofGetHeight();
     float colorr = ofNoise((time) + 771.9) * 255;
 
-    float xN = (ofNoise(time*10.1))* 10;
+    float xN = (ofNoise(time*100.1))* 4.098230498;
     ofPoint pusher = ofPoint(x,y,0);
     mesh.addVertex(pusher);
     mesh.addNormal(ofPoint(xN,xN,xN));
     mesh.addColor(ofColor(colorr,colorr,colorr));
+     */
     
 	
+    for (int i = 0; i < 1000; i++) {
+        float time = ofGetFrameNum() *0.017389 + (i * 400.987234);
+        float x = (ofNoise(time + 100.38798))* mouseX;
+        float y = ofNoise((time * .939) + 26.8789) * mouseY;
+        float colorr = ofNoise((time) + 771.9) * 4;
+        
+        float xN = (ofNoise(time*100.1))* 4.098230498;
+        ofPoint pusher = ofPoint(x,y,0);
+        /*
+        mesh.addVertex(pusher);
+        mesh.addNormal(ofPoint(xN,xN,xN));
+        mesh.addColor(ofColor(colorr,colorr,colorr));
+        */
+        
+        meshies[i].addVertex(pusher);
+        meshies[i].addNormal(ofPoint(xN,xN,xN));
+        meshies[i].addColor(ofColor(colorr,colorr,colorr));
+        
+        
+        
+    }
 	
+    fbo.begin();
 	if(doShader) {
 		shader.begin();
 		ofMatrix4x4 mat;
@@ -100,7 +138,7 @@ void ofApp::draw(){
 		ofVec4f one = modelView*ofVec4f(1,1,0,1);
 		shader.setUniformMatrix4f("modelViewMatrix",modelView);
 		// set thickness of ribbons
-		shader.setUniform1f("thickness", fmaxf(1,ofGetMouseX()/100.0));
+		shader.setUniform1f("thickness", fmaxf(1,(ofGetMouseX()/100.0))-10);
 		
 		// make light direction slowly rotate
 		//shader.setUniform3f("lightDir", sin(ofGetElapsedTimef()/10), cos(ofGetElapsedTimef()/10), 0);
@@ -109,12 +147,21 @@ void ofApp::draw(){
 	
 	
 	mesh.draw();
-  
+    
+    
+    
+    for (int i = 0; i < 1000; i++) {
+        meshies[i].draw();
+    }
+    
 	
 	//ofDrawLine( 0,0, 500, 500);
 	
 	if(doShader) shader.end();
 	
+    fbo.end();
+    
+    fbo.draw(0,0);
     ofSetColor(0);
 	ofPopMatrix();
 	
@@ -136,6 +183,11 @@ void ofApp::keyPressed  (int key){
 	if( key == ' ' ){
 		play ^= true;
 	}
+    if( key == 't' ){
+        for (int i = 0; i < 1000; i++) {
+        meshies[i].clear();
+        }
+    }
 }
 
 //--------------------------------------------------------------
